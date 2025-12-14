@@ -17,5 +17,5 @@ clean:
 install /usr/include/f64/f64.f: f64.f f64
 	sudo mkdir -p /usr/include/f64
 	sudo cp f64.f /usr/include/f64
-test: $(TARGET) /usr/include/f64/f64.f f64 primes.f
+test: $(TARGET) /usr/include/f64/f64.f primes.f
 	cat primes.f | ./f64
