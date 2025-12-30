@@ -10,54 +10,39 @@
 1000 CONSTANT DIGITS
 3350 CONSTANT ARRAY_SIZE
 
-\ 4 CONSTANT DIGITS
-\ 13 CONSTANT ARRAY_SIZE
-
 VARIABLE PREDIGIT
 VARIABLE NINES
 
 ARRAY_SIZE ARRAY PI
-
-: INIT-ARRAY ( -- )
-    \ Initialize the array with 2s.
-    \ In the mixed radix base, Pi starts as (2; 2, 2, 2, ...)
-;
-
-: PRINT-ARRAY ( -- )
-    PI ARRAY_SIZE CELLS + PI DO
-        I @ .
-    1 CELLS +LOOP
-    CR
-;
 
 : PRINT-PREDIGIT ( n -- )
     DUP 10 =                ( Overflow case )
     IF
         DROP
         PREDIGIT @ 1+ .     ( Print incremented predigit )
-        NINES @ 0 > 
+        NINES @ 0 >         ( If we're "holding" nines, they now become zeros )
         IF
             NINES @ 0 DO 
-                0 . 
+                0 .         ( Print our nines as zeros )
             LOOP
         THEN
         0 PREDIGIT !
         0 NINES !
     ELSE
-        DUP 9 =             ( Nine case )
+        DUP 9 =             ( Nine case - we "hold" these )
         IF
             DROP
-            1 NINES +!
+            1 NINES +!      ( Increment NINES )
         ELSE                ( Normal case )
-            PREDIGIT @ .
-            NINES @ 0 > 
+            PREDIGIT @ .    ( Print the digit )
+            NINES @ 0 >     ( Print out any "held" nines )
             IF
                 NINES @ 0 
                     DO 9 . 
                 LOOP
             THEN    
-            PREDIGIT !
-            0 NINES !
+            PREDIGIT !      ( Store the incoming value )
+            0 NINES !       ( Reset NINES )
         THEN 
     THEN
 ;
@@ -92,23 +77,23 @@ ARRAY_SIZE ARRAY PI
                 *               \ new_carry, j, remainder
                 -ROT            \ j, remainder, new_carry
                 CELLS PI + !    ( store remainder back into PI[j] ) \ new_carry 
-            ELSE
-                SWAP
-                10 /MOD
-                SWAP
-                PI !
-                SWAP
-                DROP
-                J 0<> 
+            ELSE                ( we're at the beginning of the array, time to chunk out a digit of pi )
+                SWAP            \ ( value x 10 ) + carry, j 
+                10 /MOD         ( we want the tens digit - and a remainder ) \ tens digit, remainder, j
+                SWAP            \ remainder, tens digit, j
+                PI !            ( store the remainder back in PI[0] ) \ tens digit, j
+                SWAP            \ j, tens digit
+                DROP            \ tens digit
+                J 0<>           \ check on the outer loop - not out first time through?
                 IF
                     PRINT-PREDIGIT
                 ELSE
-                    PREDIGIT !
+                    PREDIGIT !  ( store the value as PREDIGIT )
                 THEN
             THEN
         LOOP
     LOOP
-    1 PRINT-PREDIGIT
+    1 PRINT-PREDIGIT    ( print out the hanging value - note, this won't always work correctly because we might need a backtrack )
     CR
 ;
 
