@@ -48,7 +48,8 @@ ARRAY_SIZE ARRAY PI
 ;
 
 : COMPUTE-PI ( -- )
-    PI ARRAY_SIZE CELLS + PI DO     ( Initialize our array )
+    PI ARRAY_SIZE CELLS + PI ( Initialize our array )
+    DO
         2 I !
     1 CELLS +LOOP
     0 NINES !
