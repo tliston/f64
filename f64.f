@@ -208,7 +208,6 @@
         ,               \ Compile the 64-bit offset
 ;
 
-
 \       COMMENTS ----------------------------------------------------------------------
 \
 \ FORTH allows ( ... ) as comments within function definitions.  This works by having an IMMEDIATE
@@ -430,6 +429,15 @@
 : DEPTH ( -- n )
     S0 @ DSP@ -
     8-
+;
+
+( Clear out the stack... handy when you don't know what the status of the stack might be... )
+: CLEARSTACK ( ? -- )
+    BEGIN
+        DEPTH 0>
+    WHILE
+        DROP
+    REPEAT
 ;
 
 ( ALIGNED takes an address and rounds it up (aligns it) to the next 8 byte boundary. )
