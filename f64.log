@@ -1,0 +1,277 @@
+This is METAFONT, Version 2.71828182 (preloaded base=mf 2026.1.5)  8 JAN 2026 08:22
+**f64.f f64.fs
+(f64.f
+>> Part2
+! Isolated expression.
+<to be read again> 
+                   of
+l.1 \ Part 2 of
+                the JonesForth tutorial.
+? 
+! Extra tokens will be flushed.
+<to be read again> 
+                   of
+l.1 \ Part 2 of
+                the JonesForth tutorial.
+? 
+! Interruption.
+l.1 \ Part 2 of
+                the JonesForth tutorial.
+? quit
+OK, entering batchmode...
+! Incomplete string token has been flushed.
+l.9 ... words like IF, THEN, .", etc which in most
+                                                  
+Strings should finish on the same line as they began.
+I've deleted the partial string; you might want to
+insert another by typing, e.g., `I"new string"'.
+
+! A statement can't begin with `:'.
+<to be read again> 
+                   :
+l.26 :
+       MOD /MOD DROP ;
+I was looking for the beginning of a new statement.
+If you just proceed without changing anything, I'll ignore
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   :
+l.26 :
+       MOD /MOD DROP ;
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+>> Some
+! Isolated expression.
+<to be read again> 
+                   char
+l.28 \ Some char
+                 constant
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   char
+l.28 \ Some char
+                 constant
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! A statement can't begin with `:'.
+<to be read again> 
+                   :
+l.30 :
+       BL 32 ; \ BL (blank) is standard FORTH word for space.
+I was looking for the beginning of a new statement.
+If you just proceed without changing anything, I'll ignore
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   :
+l.30 :
+       BL 32 ; \ BL (blank) is standard FORTH word for space.
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+>> BL
+! Isolated expression.
+<to be read again> 
+                   (
+l.30 : BL 32 ; \ BL (
+                     blank) is standard FORTH word for space.
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   (
+l.30 : BL 32 ; \ BL (
+                     blank) is standard FORTH word for space.
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+>> SPACE
+! Isolated expression.
+<to be read again> 
+                   :
+l.35 :
+       SPACE BL EMIT ;
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   :
+l.35 :
+       SPACE BL EMIT ;
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+>> NEGATE.leaves.the.negative
+! Isolated expression.
+<to be read again> 
+                   of
+l.37 \ NEGATE leaves the negative of
+                                     a number on the stack.
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   of
+l.37 \ NEGATE leaves the negative of
+                                     a number on the stack.
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! Missing `=' has been inserted.
+<to be read again> 
+                   :
+l.41 :
+       TRUE 1 ;
+The next thing in this loop should have been `=' or `:='.
+But don't worry; I'll pretend that an equals sign
+was present, and I'll look for the values next.
+
+! Incomplete string token has been flushed.
+l.454 ...k).  The space following S" is the normal
+                                                  
+Strings should finish on the same line as they began.
+I've deleted the partial string; you might want to
+insert another by typing, e.g., `I"new string"'.
+
+! Incomplete string token has been flushed.
+l.475 : S" IMMEDIATE      ( -- addr len )
+                                         
+Strings should finish on the same line as they began.
+I've deleted the partial string; you might want to
+insert another by typing, e.g., `I"new string"'.
+
+! Incomplete string token has been flushed.
+l.482             DUP '"' <>
+                            
+Strings should finish on the same line as they began.
+I've deleted the partial string; you might want to
+insert another by typing, e.g., `I"new string"'.
+
+Runaway loop?
+TRUE1;:FALSE0;:NOT0=;\LITERAL.takes.whatever.on.the.stack.and.compiles ETC.
+! Forbidden token found while scanning the text of a for loop.
+<inserted text> 
+                endfor
+<to be read again> 
+                   end
+l.486 ...rop the double quote character at the end
+                                                   )
+I suspect you have forgotten an `endfor',
+causing me to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+Runaway loop?
+TRUE1;:FALSE0;:NOT0=;\LITERAL.takes.whatever.on.the.stack.and.compiles ETC.
+! Forbidden token found while scanning the text of a for loop.
+<inserted text> 
+                endfor
+<to be read again> 
+                   end
+l.486 ...rop the double quote character at the end
+                                                   )
+I suspect you have forgotten an `endfor',
+causing me to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+Runaway loop?
+TRUE1;:FALSE0;:NOT0=;\LITERAL.takes.whatever.on.the.stack.and.compiles ETC.
+! Forbidden token found while scanning the text of a for loop.
+<inserted text> 
+                endfor
+<to be read again> 
+                   end
+l.486 ...rop the double quote character at the end
+                                                   )
+I suspect you have forgotten an `endfor',
+causing me to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+Runaway loop?
+TRUE1;:FALSE0;:NOT0=;\LITERAL.takes.whatever.on.the.stack.and.compiles ETC.
+! Forbidden token found while scanning the text of a for loop.
+<inserted text> 
+                endfor
+<to be read again> 
+                   end
+l.486 ...rop the double quote character at the end
+                                                   )
+I suspect you have forgotten an `endfor',
+causing me to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+Runaway loop?
+TRUE1;:FALSE0;:NOT0=;\LITERAL.takes.whatever.on.the.stack.and.compiles ETC.
+! Forbidden token found while scanning the text of a for loop.
+<inserted text> 
+                endfor
+<to be read again> 
+                   end
+l.486 ...rop the double quote character at the end
+                                                   )
+I suspect you have forgotten an `endfor',
+causing me to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+Runaway loop?
+TRUE1;:FALSE0;:NOT0=;\LITERAL.takes.whatever.on.the.stack.and.compiles ETC.
+! Forbidden token found while scanning the text of a for loop.
+<inserted text> 
+                endfor
+<to be read again> 
+                   end
+l.486 ...rop the double quote character at the end
+                                                   )
+I suspect you have forgotten an `endfor',
+causing me to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+ )

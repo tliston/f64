@@ -1,0 +1,8 @@
+: COUNT
+	0
+	BEGIN
+		1+
+		DUP
+		1000000000 =
+	UNTIL
+;

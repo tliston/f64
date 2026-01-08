@@ -14,8 +14,8 @@ $(TARGET): $(OBJECTS) $(INCLUDES) Makefile
 	$(LINKER) -s $(OBJECTS) -o $@ $(LDFLAGS)
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
-install /usr/include/f64/f64.f: f64.f f64
+install /usr/include/f64/f64.fs: f64.fs f64
 	sudo mkdir -p /usr/include/f64
-	sudo cp f64.f /usr/include/f64
-test: $(TARGET) /usr/include/f64/f64.f primes.f
-	cat primes.f | ./f64
+	sudo cp f64.fs /usr/include/f64
+test: $(TARGET) /usr/include/f64/f64.fs primes.fs
+	cat primes.fs | ./f64

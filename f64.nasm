@@ -112,7 +112,7 @@ section .rodata
 cold_start:
         dq QUIT
 f64_source:     
-        db "/usr/include/f64/f64.f"
+        db "/usr/include/f64/f64.fs"
 f64_source_end: 
         db 0h
 loadf64_fail_msg: 
