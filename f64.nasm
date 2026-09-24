@@ -15,7 +15,8 @@ CPU X64 ; Target the x86_64 family of CPUs.
 
 ; The NEXT Word as a macro
 %macro NEXT 0
-        lodsq
+        mov rax, [rsi]
+        add rsi, 8
         jmp [rax]
 %endmacro
 
@@ -105,6 +106,7 @@ _start:
         ; But it is also called when the user ends input (Ctrl+d) in the normal use
         ; of the interpreter.
 exit_with_grace_and_beauty: ; (don't forget to set ebx to exit code)
+        call _FLUSH_EMIT
         mov rax, __NR_exit       ; syscall: exit
         syscall                  ; invoke syscall
 
@@ -197,10 +199,10 @@ defcode "DROP", DROP ; drop top of stack
         NEXT
 
 defcode "SWAP", SWAP; swap the top two stack elements
-        pop rax
-        pop rbx
-        push rax
-        push rbx
+        mov rax, [rsp]
+        mov rbx, [rsp+8]
+        mov [rsp], rbx
+        mov [rsp+8], rax
         NEXT
 
 defcode "DUP", DUP ; duplicate top of stack
@@ -214,26 +216,25 @@ defcode "OVER", OVER ; get the 2nd element from stack and push it onto the top
         NEXT
 
 defcode "ROT", ROT ; rotate the stack: a, b, c => c, a, b
-        pop rax
-        pop rbx
-        pop rcx
-        push rbx
-        push rax
-        push rcx
+        mov rax, [rsp]
+        mov rbx, [rsp+8]
+        mov rcx, [rsp+16]
+        mov [rsp+16], rbx
+        mov [rsp+8], rax
+        mov [rsp], rcx
         NEXT
 
 defcode "-ROT", NROT ; negate a stack ROT: c, a, b => a, b, c 
-        pop rax
-        pop rbx
-        pop rcx
-        push rax
-        push rcx
-        push rbx
+        mov rax, [rsp]
+        mov rbx, [rsp+8]
+        mov rcx, [rsp+16]
+        mov [rsp+16], rax
+        mov [rsp+8], rcx
+        mov [rsp], rbx
         NEXT
 
 defcode "2DROP", TWODROP ; drop top two elements of stack
-        pop rax
-        pop rax
+        add rsp, 16
         NEXT
 
 defcode "2DUP", TWODUP ; duplicate top two elements of stack
@@ -244,14 +245,14 @@ defcode "2DUP", TWODUP ; duplicate top two elements of stack
         NEXT
 
 defcode "2SWAP", TWOSWAP ; swap top two pairs of elements of stack
-        pop rax
-        pop rbx
-        pop rcx
-        pop rdx
-        push rbx
-        push rax
-        push rdx
-        push rcx
+        mov rax, [rsp]
+        mov rbx, [rsp+8]
+        mov rcx, [rsp+16]
+        mov rdx, [rsp+24]
+        mov [rsp], rcx
+        mov [rsp+8], rdx
+        mov [rsp+16], rax
+        mov [rsp+24], rbx
         NEXT
 
 defcode "?DUP", QDUP ; duplicate top of stack if non-zero
@@ -289,9 +290,8 @@ defcode "-", SUB ; get the top of the stack and subtract if from the next value 
 
 defcode "*", MUL ; get the top of the stack and multiply it by the next value on the stack (ignore overflow)
         pop rax
-        pop rbx
-        imul rax, rbx
-        push rax
+        imul rax, [rsp]
+        mov [rsp], rax
         NEXT
 
 ;	In this FORTH, only /MOD is primitive.  Later we will define the / and MOD words in
@@ -299,9 +299,9 @@ defcode "*", MUL ; get the top of the stack and multiply it by the next value on
 ;	leaves both quotient and remainder makes this the obvious choice.
 
 defcode "/MOD", DIVMOD
-        xor rdx, rdx
         pop rbx
         pop rax
+        cqo
         idiv rbx
         push rdx
         push rax
@@ -313,11 +313,10 @@ defcode "/MOD", DIVMOD
 %macro defcmp 3
         defcode %1, %2
                 pop rax
-                pop rbx
-                cmp rbx, rax
+                cmp [rsp], rax
                 set%+3 al
                 movzx rax, al
-                push rax
+                mov [rsp], rax
                 NEXT
 %endmacro
 
@@ -332,11 +331,10 @@ defcmp ">=", GE,  ge
 
 %macro deftest 3
         defcode %1, %2
-                pop rax
-                test rax, rax
+                cmp qword [rsp], 0
                 set%+3 al
                 movzx rax, al
-                push rax
+                mov [rsp], rax
                 NEXT
 %endmacro
 
@@ -525,9 +523,8 @@ defcode "R>", FROMR
         NEXT
 
 defcode "R@", RFETCH
-        POPRSP rax
+        mov rax, [rbp]
         push rax
-        PUSHRSP rax
         NEXT
 
 defcode "RSP@", RSPFETCH
@@ -555,9 +552,8 @@ defcode "ITR>", FROMITR
         NEXT
 
 defcode "ITR@", ITRFETCH
-        POPITR rax
+        mov rax, [r15]
         push rax
-        PUSHITR rax
         NEXT
 
 defcode "ITRSP@", ITRSPFETCH
@@ -661,18 +657,43 @@ defcode "EMIT", EMIT
         call _EMIT
         NEXT
 _EMIT:
-        mov rdi, 1             ; stdout (1)
-        mov [emit_scratch], al ; save the byte to scratch buffer
-        push rsi               ; save rsi temporarily
-        mov rsi, emit_scratch
-        mov rdx, 1             ; how many bytes to write
-        mov rax, __NR_write    ; write(1, scratch, 1)
-        syscall
-        pop rsi                ; restore it
+        mov rbx, [emit_ptr]
+        mov [rbx], al
+        inc rbx
+        mov [emit_ptr], rbx
+        cmp al, 0x0A            ; Flush on newline
+        je _FLUSH_EMIT
+        cmp rbx, emit_buffer + 4096 ; Flush when buffer full
+        jge _FLUSH_EMIT
         ret
 
+_FLUSH_EMIT:
+        push rsi
+        push rdi
+        push rdx
+        push rax
+        mov rsi, emit_buffer
+        mov rdx, [emit_ptr]
+        sub rdx, rsi            ; length to write
+        jz .done
+        mov rdi, 1              ; stdout (1)
+        mov rax, __NR_write
+        syscall
+        mov qword [emit_ptr], emit_buffer
+.done:
+        pop rax
+        pop rdx
+        pop rdi
+        pop rsi
+        ret
+
+defcode "FLUSH", FLUSH
+        call _FLUSH_EMIT
+        NEXT
+
 section .data
-emit_scratch: db 0
+align 8
+emit_ptr: dq emit_buffer
 
 ;	Back to input, WORD is a FORTH word which reads the next full word of input.
 ;
@@ -770,6 +791,7 @@ defcode "NUMBER", NUMBER
 _NUMBER:
         xor rax, rax
         xor rbx, rbx
+        xor r8, r8          ; r8 = sign flag (0 = positive, 1 = negative)
 
         test rcx, rcx ; trying to parse zero-length string is an error, but will return 0.
         jz .ret
@@ -777,14 +799,11 @@ _NUMBER:
         mov rdx, [var_BASE] ; get BASE (in dl)
         mov bl, [rdi]       ; bl = first character in string
         inc rdi
-        push rax            ; push 0 on stack
         cmp bl, '-'         ; negative number?
         jnz .convert
-        pop rax
-        push rbx            ; push <> 0 on stack, indicating negative
+        inc r8              ; mark negative
         dec rcx
         jnz .loop
-        pop rbx
         mov rcx, 1
         ret
 
@@ -812,10 +831,9 @@ _NUMBER:
         dec rcx
         jnz .loop
 
-        ; Negate the result if the first character was '-' (saved on the stack)
+        ; Negate the result if the first character was '-'
 .finish:
-        pop rbx
-        test rbx, rbx
+        test r8, r8
         jz .ret
         neg rax
 
@@ -865,6 +883,11 @@ _FIND:
         mov al, [rdx+8]              ; al = flags+length field
         and al, F_HIDDEN | F_LENMASK ; al = name length
         cmp al, cl                   ; Length is the same?
+        jne .next
+
+        ; Quick 1st character check
+        mov bl, [rdx+9]
+        cmp bl, [rdi]
         jne .next
 
         ; Compare the strings in detail.
@@ -1369,23 +1392,19 @@ defcode "(DO)", XDO
 
 defcode "(LOOP)", XLOOP
         ; 1. Load Loop Parameters
-        mov rbx, [r15]      ; Load current Index
-        inc rbx             ; Increment Index
-        mov [r15], rbx      ; Write back to stack (vital for 'I' to work)
+        inc qword [r15]     ; Increment Index in-place
+        mov rbx, [r15]      ; Load new Index
         mov rcx, [r15+8]    ; Load Limit
         ; 2. Compare
-        ; Note: Forth definitions of loops vary on signed vs unsigned.
-        ; Standard signed comparison is assumed here.
         cmp rbx, rcx        ; Compare Index vs Limit
-        jge .loop_finish     ; If Index >= Limit, we are done
+        jge .loop_finish    ; If Index >= Limit, we are done
 .loop_continue:
         ; 3. Loop Back
-        mov rax, [rsi]      ; Fetch the branch offset
-        add rsi, rax        ; Jump back
+        add rsi, [rsi]      ; Apply branch offset
         NEXT
 .loop_finish:
         ; 4. Cleanup
-        lea r15, [r15+16]   ; Drop Index (8 bytes) and Limit (8 bytes)
+        add r15, 16         ; Drop Index & Limit
         add rsi, 8          ; Skip the inline offset
         NEXT
 
@@ -1395,19 +1414,15 @@ defcode "(+LOOP)", XPLUSLOOP
         add rax, rbx        ; New Index = Old Index + n
         mov [r15], rax      ; Update Index on stack
         mov rcx, [r15+8]    ; Load Limit
-        ; Logic: Did we cross the boundary?
-        ; Implementation: (OldIndex - Limit) XOR (NewIndex - Limit) < 0?
-        ; This relies on sign bits toggling.
         sub rbx, rcx        ; rbx = OldIndex - Limit
         sub rax, rcx        ; rax = NewIndex - Limit
         xor rax, rbx        ; XOR the differences
         js .loop_finish     ; If Sign Flag is set (result negative), we crossed boundary -> Finish.
 .loop_continue:
-        mov rax, [rsi]
-        add rsi, rax
+        add rsi, [rsi]
         NEXT
 .loop_finish:
-        lea r15, [r15+16]   ; Drop Loop context
+        add r15, 16         ; Drop Loop context
         add rsi, 8          ; Skip offset
         NEXT
 
@@ -1449,12 +1464,13 @@ defcode "LITSTRING", LITSTRING
         NEXT
 
 defcode "TELL", TELL
-        mov rcx, rsi        ; save temporarily
-        mov rdi, 1          ; 1st param = stdout(1)
+        call _FLUSH_EMIT
         pop rdx             ; 3nd param = length of string
-        pop rsi             ; 2nd param = the string
+        pop rax             ; 2nd param = the string
+        push rsi            ; save previous value of rsi in the stack
+        mov rdi, 1          ; 1st param = stdout(1)
+        mov rsi, rax
         mov rax, __NR_write
-        push rcx            ; save previous value of rsi in the stack
         syscall
         pop rsi             ; restore rsi
         NEXT
@@ -1700,3 +1716,7 @@ iterator_stack_top:
 align 4096
 buffer:
         resb BUFFER_SIZE
+
+align 4096
+emit_buffer:
+        resb 4096
