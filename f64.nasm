@@ -85,7 +85,7 @@ _start:
         mov rdi, 2
         mov rsi, loadf64_fail_msg
         mov rdx, (loadf64_fail_msg_end - loadf64_fail_msg)
-        mov rax, __NR_write
+        mov rax, __NR_write       ; write syscall
         syscall
         ; Print f64 source path
         mov rdi, 2
@@ -107,8 +107,8 @@ _start:
         ; of the interpreter.
 exit_with_grace_and_beauty: ; (don't forget to set ebx to exit code)
         call _FLUSH_EMIT
-        mov rax, __NR_exit       ; syscall: exit
-        syscall                  ; invoke syscall
+        mov rax, __NR_exit       ; exit syscall
+        syscall                  ;
 
 section .rodata
 cold_start:
@@ -619,7 +619,7 @@ _KEY:
         mov rsi, buffer                 ; pointer to the buffer
         mov [currkey], rsi
         mov rdx, BUFFER_SIZE            ; how many bytes to read max
-        mov rax, __NR_read              ; read(0, buffer, size)
+        mov rax, __NR_read              ; read(0, buffer, size) syscall
         syscall
         test rax, rax
         jbe .eof
@@ -633,7 +633,7 @@ _KEY:
         mov rdi, [read_from_fd]         ; where are we reading from?
         cmp rdi, 0                      ; If we were reading from STDIN (0)...
         je .eof_stdin                   ; ...then exit the program normally.
-        mov rax, __NR_close
+        mov rax, __NR_close             ; close syscall
         syscall
         mov qword [read_from_fd], 0     ; Change the read-from fd to STDIN.
         jmp .more_input                 ; And continue reading!
@@ -677,7 +677,7 @@ _FLUSH_EMIT:
         sub rdx, rsi            ; length to write
         jz .done
         mov rdi, 1              ; stdout (1)
-        mov rax, __NR_write
+        mov rax, __NR_write     ; write syscall
         syscall
         mov qword [emit_ptr], emit_buffer
 .done:
@@ -1470,7 +1470,7 @@ defcode "TELL", TELL
         push rsi            ; save previous value of rsi in the stack
         mov rdi, 1          ; 1st param = stdout(1)
         mov rsi, rax
-        mov rax, __NR_write
+        mov rax, __NR_write ; write syscall
         syscall
         pop rsi             ; restore rsi
         NEXT
@@ -1691,12 +1691,12 @@ defcode "SYSCALL0", SYSCALL0
 section .text
 set_up_data_segment:
         xor rdi, rdi
-        mov rax, __NR_brk ; brk(0)
+        mov rax, __NR_brk ; brk syscall
         syscall
         mov [var_HERE], rax
         add rax, INITIAL_DATA_SEGMENT_SIZE
         mov rdi, rax
-        mov rax, __NR_brk
+        mov rax, __NR_brk ; brk syscall
         syscall
         ret
 
